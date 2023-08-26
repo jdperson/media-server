@@ -1,5 +1,6 @@
 const { connect, connection } = require('mongoose');
+require('dotenv').config();
 
-connect(process.env.MONGO_CONN);
+connect(process.env.MONGODB_URI);
 
 module.exports = connection;
