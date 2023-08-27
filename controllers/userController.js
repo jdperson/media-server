@@ -62,7 +62,7 @@ module.exports = {
         }
     
         await Thought.deleteMany({ _id: { $in: user.thoughts } });
-            res.json({ message: 'User and associated apps deleted!' })
+            res.json({ message: 'User and associated thoughts deleted!' })
         } catch (err) {
             res.status(500).json(err);
         }
@@ -80,7 +80,17 @@ module.exports = {
                 return res.status(404).json({ message: 'No user with this ID' });
             }
 
-            res.json(user);
+            const friend = await User.findOneAndUpdate(
+                { _id: req.params.friendId },
+                { $addToSet: { friends: req.params.userId } },
+                { new: true }
+            );
+
+            if (!friend) {
+                return res.status(404).json({ message: 'No friend with this ID' });
+            }
+
+            res.json({ user, friend });
         } catch (err) {
             res.status(500).json(err);
         }
@@ -99,7 +109,17 @@ module.exports = {
                 return res.status(404).json({ message: 'No user with this ID' });
             }
 
-            res.json(user);
+            const friend = await User.findOneAndUpdate(
+                { _id: req.params.friendId },
+                { $pull: { friends: req.params.userId } },
+                { new: true }
+            );
+
+            if (!friend) {
+                return res.status(404).json({ message: 'No friend with this ID' });
+            }
+
+            res.json({ user, friend });
         } catch (err) {
             res.status(500).json(err);
         }
